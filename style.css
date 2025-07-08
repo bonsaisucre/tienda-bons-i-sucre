@@ -1,0 +1,683 @@
+body {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  background-color: #e8f5e9; /* Verde muy suave de fondo */
+
+  background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* textura tipo madera suave */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  color: #2e7d32; /* Verde hoja para el texto */
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+
+  backdrop-filter: brightness(0.98) saturate(1.1);
+}
+
+h1 {
+    text-align: center;
+    color: #2e7d32;
+}
+.vendido-texto {
+  color: yellow;
+  font-weight: bold;
+  font-size: 1.2em;
+  display: block;
+  margin-top: 10px;
+}
+
+.producto.vendido img {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+#imagenQR {
+  max-width: 400px;    /* máximo ancho */
+  max-height: 400px;   /* máximo alto */
+  width: 100%;         /* que sea responsive dentro de ese límite */
+  height: auto;        /* mantiene proporción */
+  margin: 0 auto;      /* centrado horizontal */
+  display: block;
+}
+
+.tienda {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: -20px;
+}
+.ocultar {
+    display: none !important;
+}
+
+
+.producto img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.producto h3 {
+    color: #000000;
+    position:relative;
+    font-size: 30px;
+}
+
+.boton-comprar {
+    background: linear-gradient(to bottom, #81c784, #66bb6a);
+    color: black;
+    padding: 10px 16px;
+    margin: 10px auto;
+    display: block;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.boton-comprar:hover {
+    background: #388e3c;
+    transform: scale(1.05);
+}
+
+@keyframes puzzleIn {
+  0% {
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+    opacity: 0;
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 1;
+  }
+}
+
+@keyframes puzzleOut {
+  0% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    opacity: 1;
+  }
+  100% {
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+    opacity: 0;
+  }
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  margin-top: 12px;
+  border-radius: 25px;
+  left: 13px;
+  top: 0;
+  width: 95%;
+  height: 86%;
+  overflow: hidden; /* Importante para clip-path */
+  background-color: #d7c6c6;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+}
+
+.modal.mostrar {
+  display: flex;
+  animation: puzzleIn 0.7s ease forwards;
+}
+
+.modal.ocultando {
+  display: flex;
+  animation: puzzleOut 0.7s ease forwards;
+}
+
+
+
+.producto {
+  background: rgba(245, 241, 230, 0.9); /* Beige muy suave translúcido */
+  border: 1px solid #d7ccc8; /* Marrón claro suave */
+  padding: 5px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.modal-content,
+.modal-content-catalogo {
+    background: rgba(230, 229, 229, 0.85);
+    position: relative;
+    width: 80%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    margin: auto; 
+}
+
+.modal.mostrar .modal-content,
+.modal.mostrar .modal-content-catalogo {
+    transform: scale(1);
+}
+.modal-content-catalogo h4 {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: #2e7d32;
+  font-weight: bold;
+  font-size: 18px;
+  border-bottom: 2px solid #66bb6a;
+  padding-bottom: 4px;
+}
+
+.modal-content-catalogo img {
+    width: 100%;
+    max-height: 350px;
+    margin-top: 35px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+input, textarea {
+    width: 100%;
+    max-width: 300px;
+    margin: 6px auto;
+    display: block;
+    padding: 10px;
+    border: 2px solid #a5d6a7;
+    border-radius: 8px;
+    background: #f0f8f5;
+    color: #2e7d32;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, textarea:focus {
+    border-color: #66bb6a;
+    box-shadow: 0 0 8px rgba(102, 187, 106, 0.5);
+    outline: none;
+}
+
+/* Botones estilo natural */
+.modal-content button,
+#descargarQR {
+    background: linear-gradient(to bottom, #81c784, #66bb6a);
+    color: white;
+    padding: 10px 16px;
+    margin: 10px auto;
+    display: block;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: background 0.3s, transform 0.2s;
+}
+
+.modal-content button:hover,
+#descargarQR:hover {
+    background: #388e3c;
+    transform: scale(1.05);
+}
+
+/* Icono admin: siempre arriba a la izquierda */
+#btnAdmin {
+    position: relative;       /* no fixed */
+    top: -24px;                   /* bien pegado arriba */
+    left: 35px;                  /* bien pegado a la izquierda */
+    width: 90px;
+    height: 90px;
+    cursor: pointer;
+    z-index: 9999;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 10px;            /* pequeño margen si quieres separación del borde */
+}
+#catalogoDescripcion {
+  font-size: 16px;
+  color: #333;
+  background-color: #f8f8f8;
+  padding: 12px 16px;
+  margin-top: 15px;
+  border-left: 4px solid #66bb6a;
+  border-radius: 6px;
+  line-height: 1.6;
+  text-align: left;           /* ✅ Esto asegura alineación izquierda */
+  white-space: pre-wrap;      /* ✅ Respeta saltos de línea si los hay */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+#btnAdmin img {
+    width: 140%;
+    height: 140%;
+    object-fit: contain;
+}
+
+#btnAdmin:hover {
+    opacity: 0.8;
+}
+
+.cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #4caf50;  /* verde */
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  user-select: none;
+  z-index: 9999;
+}
+
+.cerrar:hover {
+  background-color: #388e3c;  /* verde más oscuro en hover */
+  color: #fff;
+}
+
+
+
+/* Estilos base (pantallas grandes) */
+.titulo {
+    position: absolute;         
+    top: 5px;                  
+    left: 170px;                 
+    text-align: left;
+    font-size: 18px;
+    color: #000000;    
+    font-family: 'Arial', sans-serif;  
+    line-height: 0.8;
+    letter-spacing: 4px;
+    transform: scaleX(1.2);
+}
+
+.titulo span {
+    display: block;
+}
+
+.rojo {
+    color: red;
+}
+
+.titulo .delgada {
+    font-weight: 250; 
+}
+@media (max-width: 600px) {
+    .tienda {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .modal-content,
+    .modal-content-catalogo {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        padding: 10px;
+    }
+
+     .modal {
+     margin-top: 35px;
+         max-height: 695px;
+         background-color: #d7c6c6; /* ✅ Usar el mismo fondo del modal original */
+        }
+
+    #btnAdmin {
+        width: 95px;
+        height: 95px;
+        top: -19px;
+        left: 36px;
+    }
+   #modalCompra input#nombre,
+   #modalCompra input#direccion,
+   #modalCompra input#telefono {
+     margin-top: 120px; /* espacio extra arriba */
+     display: block;
+     width: 100%;
+     max-width: 300px;
+     padding: 10px;
+     border: 2px solid #a5d6a7;
+     border-radius: 8px;
+     background: #f0f8f5;
+     color: #2e7d32;
+     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+     transition: border-color 0.3s, box-shadow 0.3s;
+   }
+
+    .titulo {
+        top: 10px;             
+        left: 190px;       
+        font-size: 16px;       
+        transform: scaleX(1.5); 
+        line-height: 0.9; 
+    }
+    
+    .producto h3{
+        top:-10px;
+        font-size: 15px;
+        
+    }
+.codigo{
+    margin-top: -21px;
+  
+}
+  #imagenQR {
+        width: 90%;        /* que use todo el ancho del modal */
+        margin-left: 15px;      /* mantener proporción */
+      
+    }
+}
+
+#modalCompra select {
+    width: 100%;
+    max-width: 300px;
+    margin: 6px auto;
+    display: block;
+    padding: 10px;
+    border: 2px solid #a5d6a7;
+    border-radius: 8px;
+    background: #f0f8f5;
+    color: #2e7d32;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 14px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#modalCompra select:focus {
+    border-color: #66bb6a;
+    box-shadow: 0 0 8px rgba(102, 187, 106, 0.5);
+    outline: none;
+}
+.codigo {
+    font-size: 13px;
+    color: #000000;
+
+}
+.imagen-con-codigo {
+  position: relative;
+  display: inline-block; /* que tome solo el ancho de la imagen */
+  width: 100%; /* para que la imagen ocupe el ancho máximo del modal */
+  max-width: 400px; /* opcional, para limitar tamaño */
+}
+
+.imagen-con-codigo img {
+  width: 100%;
+  border-radius: 8px;
+  display: block;
+}
+
+.codigo-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+    margin-top: -12px;
+    margin-left: 120px;
+  background-color: rgb(245, 71, 71, 0.8); /* rojo con transparencia */
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 14px;
+  pointer-events: none; /* para que no interfiera con clicks */
+  user-select: none; /* para que no se pueda seleccionar */
+  z-index: 10;
+}
+.imagen-con-sello {
+  position: relative;
+  width: 100%;
+}
+
+.imagen-con-sello img {
+  width: 100%;
+  display: block;
+}
+
+.precio {
+    display: none;
+    font-size: 15px;
+    color: #9b1717;
+    font-weight: bold;
+    margin-top: -15px;
+    position: relative; /* Si vas a usar left */
+    left: 0; /* o ajusta según necesidad */
+    text-align: center;
+}
+#cargando {
+  text-align: center;
+  font-size: 16px;
+  color: #888;
+  margin-top: 20px;
+}
+.spinner-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.spinner {
+  border: 6px solid #d4eede;
+  border-top: 6px solid #66bb6a;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px auto;
+  animation: girar 5s linear infinite;
+}
+
+@keyframes girar {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#cargando p {
+  font-size: 16px;
+  color: #66bb6a;
+  font-weight: bold;
+}
+/* Modal de mensaje pequeño y centrado */
+#modalMensaje {
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.2); /* fondo más suave */
+  padding: 0;
+}
+
+/* Caja del modal más pequeña */
+#modalMensaje .modal-content {
+  width: 260px;
+  padding: 20px 15px;
+  background-color: #f1f8e9;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+/* Título más pequeño */
+#modalMensaje h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: #33691e;
+}
+
+/* Texto más compacto */
+#modalMensaje p {
+  font-size: 14px;
+  color: #4e342e;
+  margin-bottom: 15px;
+}
+
+/* Botón centrado, ya viene estilizado desde antes */
+#modalMensaje button {
+  font-size: 14px;
+  padding: 8px 14px;
+  width: 100%;
+    background: #388e3c;
+      transform: scale(1.05);
+
+}
+#modalMensaje .modal-content {
+  width: 240px !important;
+  max-width: 240px !important;
+  height: auto !important;
+  padding: 18px 12px !important;
+  background-color: #f1f8e9;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  text-align: center;
+}
+/* Animación de aparición */
+@keyframes aparecer {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+#modalLogin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro */
+  z-index: 9999; /* Muy alto para estar encima de todo */
+  display: none; /* Cambia a 'flex' o 'block' con JS */
+  justify-content: center;
+  align-items: center;
+}
+
+#modalLogin .modal-content {
+  background: #2c2c2c;
+  color: #f0f0f0;
+  padding: 30px;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#modalLogin h3 {
+  margin-bottom: 20px;
+  color: #4fc3f7;
+  font-weight: bold;
+}
+
+#modalLogin input {
+  margin: 10px 0;
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #555;
+  border-radius: 5px;
+  outline: none;
+  background: #444;
+  color: #fff;
+}
+
+#modalLogin .input-con-ojito {
+  width: 100%;
+  position: relative;
+}
+
+#modalLogin .input-con-ojito input {
+  padding-right: 35px;
+}
+
+#modalLogin .ojito {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#modalLogin button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #4fc3f7;
+  color: #2c2c2c;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+#modalLogin button:hover {
+  background: #29b6f6;
+}
+
+#errorLogin {
+  color: #ef5350;
+  margin-top: 10px;
+}
+.input-contraseña {
+  position: relative;
+  width: 100%;
+}
+
+.input-contraseña input {
+  width: 100%;
+  padding-right: 40px; /* espacio para icono */
+  box-sizing: border-box;
+}
+
+.icono-ojo {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+.icono-ojo.abierto {
+  filter: invert(27%) sepia(93%) saturate(3699%) hue-rotate(187deg) brightness(96%) contrast(91%);
+}
+.icono-ojo.cerrado {
+  filter: brightness(0) invert(1); /* Blanco */
+}
+.producto {
+  position: relative;
+  background: rgba(232, 245, 233, 0.85);
+  border: 1px solid #a5d6a7;
+  padding: 5px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.imagen-contenedor {
+  position: relative;
+}
+
+.imagen-contenedor img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* Estilo grisáceo cuando no está a la venta */
+.producto-vendido img {
+  filter: grayscale(100%) brightness(0.6);
+}
+
+/* Cartel “VENDIDO” en diagonal */
+.vendido {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  background-color: crimson;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  z-index: 10;
+  opacity: 0.9;
+}

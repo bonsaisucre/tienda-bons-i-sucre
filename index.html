@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tienda de Bonsáis</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Modal de inicio de sesión admin -->
+  <div class="modal" id="modalLogin">
+    <div class="modal-content">
+      <span class="cerrar" onclick="cerrarModal('modalLogin')">&times;</span>
+      <h3>Iniciar Sesión</h3>
+      <input type="text" id="loginUsuario" placeholder="Usuario" />
+      <div class="input-contraseña">
+        <input type="password" id="loginContra" placeholder="Contraseña" />
+        <img id="togglePassword" class="icono-ojo" src="icons8-invisible-48.png" alt="Mostrar contraseña" style="cursor:pointer; width:24px; height:24px;" />
+      </div>
+      <button onclick="validarLogin()">Ingresar</button>
+      <p id="errorLogin" style="color: red; display: none;">Usuario o contraseña incorrectos</p>
+    </div>
+  </div>
+
+  <!-- Botón Admin -->
+  <img src="1751075118469.png" id="btnAdmin" alt="Admin" onclick="mostrarModal('modalLogin')" />
+
+  <!-- Título -->
+  <h1 class="titulo">
+    <div class="delgada">CENTRO</div>
+    <div class="delgada">CULTURAL</div>
+    <div class="delgada">DEL</div>
+    <div class="rojo">BONSÁI</div>
+    <div>SUCRE</div>
+  </h1>
+
+  <!-- Loading -->
+  <div id="cargando" class="spinner-container">
+    <div class="spinner"></div>
+    <p>Cargando productos...</p>
+  </div>
+
+
+  <!-- Productos -->
+  <div class="tienda" id="tienda"></div>
+
+  <!-- Modal Catálogo -->
+  <div class="modal" id="modalCatalogo">
+    <div class="modal-content-catalogo">
+      <span class="cerrar" onclick="cerrarModal('modalCatalogo')">Cerrar</span>
+      <div class="imagen-con-codigo">
+        <img id="catalogoImagen" alt="Bonsái" />
+        <div id="catalogoCodigo" class="codigo-badge"></div> 
+      </div>
+      <h3 id="catalogoNombre"></h3>
+      <h4>Descripción</h4>
+      <p id="catalogoDescripcion"></p>
+      <p id="catalogoPrecio"></p>
+      <button class="boton-comprar" onclick="mostrarModal('modalCompra')">Comprar Ahora</button>
+    </div>
+  </div>
+
+  <!-- Modal Compra -->
+  <div class="modal" id="modalCompra">
+    <div class="modal-content">
+      <span class="cerrar" onclick="cerrarModal('modalCompra')">Cerrar</span>
+      <h3>Completa tus datos para el envío:</h3>
+      <input type="text" id="nombre" placeholder="Tu Nombre" required />
+      <select id="direccion" required>
+        <option value="" disabled selected>Selecciona tu departamento</option>
+        <option value="La Paz">La Paz</option>
+        <option value="Cochabamba">Cochabamba</option>
+        <option value="Santa Cruz">Santa Cruz</option>
+        <option value="Oruro">Oruro</option>
+        <option value="Potosí">Potosí</option>
+        <option value="Chuquisaca">Chuquisaca</option>
+        <option value="Tarija">Tarija</option>
+        <option value="Beni">Beni</option>
+        <option value="Pando">Pando</option>
+      </select>
+      <input type="tel" id="telefono" placeholder="Teléfono" required />
+      <button onclick="finalizarCompra()">Finalizar Compra</button>
+    </div>
+  </div>
+
+  <!-- Modal QR -->
+  <div class="modal" id="modalQR">
+    <div class="modal-content">
+      <span class="cerrar" onclick="cerrarModal('modalQR')">&times;</span>
+      <h3>Escanea o descarga tu QR de pago:</h3>
+      <img id="imagenQR" alt="QR de pago" />
+      <button id="descargarQR" onclick="descargarQR()">Descargar QR</button>
+    </div>
+  </div>
+
+  <!-- Modal Admin -->
+  <div class="modal" id="modalAdmin">
+    <div class="modal-content">
+      <span class="cerrar" onclick="cerrarModal('modalAdmin')">&times;</span>
+      <h3>Agregar Bonsái:</h3>
+      <input type="text" id="nuevoNombre" placeholder="Nombre del Bonsái" />
+      <textarea id="nuevoDescripcion" placeholder="Descripción detallada del bonsái..." rows="4"></textarea>
+      <input type="number" id="nuevoPrecio" placeholder="Precio" />
+      <input type="text" id="nuevoCodigo" placeholder="Código interno (ej: 54-ZB)" />
+      <input type="file" id="nuevoImagen" accept="image/*" />
+      <button onclick="agregarProducto()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- Modal Mensaje -->
+  <div class="modal" id="modalMensaje">
+    <div class="modal-content">
+      <h3>¡Gracias por tu compra!</h3>
+      <p>Se le mandará al QR de pago para cancelar su pedido.</p>
+      <button onclick="cerrarModal('modalMensaje'); mostrarModal('modalQR');">Siguiente</button>
+    </div>
+  </div>
+  <script type="module" src="script.js"></script>
+
+</body>
+</html>
