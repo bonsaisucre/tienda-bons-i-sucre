@@ -45,7 +45,7 @@ h1 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
-    margin-top: -20px;
+    margin-top: 10px;
 }
 .ocultar {
     display: none !important;
@@ -60,9 +60,14 @@ h1 {
 }
 
 .producto h3 {
-    color: #000000;
-    position:relative;
-    font-size: 30px;
+  color: #000000;
+  position: relative;
+  font-size: clamp(18px, 5vw, 30px);
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-align: center; /* Opcional si quieres centrarlo */
 }
 
 .boton-comprar {
@@ -325,13 +330,13 @@ input:focus, textarea:focus {
      .modal {
      margin-top: 35px;
          max-height: 695px;
-         background-color: #d7c6c6; /* ✅ Usar el mismo fondo del modal original */
+         background-color: #fff5f5; /* ✅ Usar el mismo fondo del modal original */
         }
 
     #btnAdmin {
         width: 95px;
         height: 95px;
-        top: -19px;
+        top: 16px;
         left: 36px;
     }
    #modalCompra input#nombre,
@@ -351,7 +356,7 @@ input:focus, textarea:focus {
    }
 
     .titulo {
-        top: 10px;             
+        top: 45px;             
         left: 190px;       
         font-size: 16px;       
         transform: scaleX(1.5); 
@@ -681,3 +686,113 @@ input:focus, textarea:focus {
   z-index: 10;
   opacity: 0.9;
 }
+#seguimientoPedido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.estado-card {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin: 10px 0;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.estado-card.completado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-card.actual {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.icono-estado {
+  font-size: 24px;
+}
+.estado-linea {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
+}
+
+.estado-linea.completado {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.estado-linea.actual {
+  background-color: #fff3cd;
+  color: #856404;
+}
+.mensaje-final {
+  margin-top: 20px;
+  background-color: #e6f9e9;
+  padding: 15px;
+  border-radius: 10px;
+  color: #2d6a4f;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  border: 2px dashed #95d5b2;
+}
+.contenedor-estado-pedido {
+  position: absolute; /* o fixed si quieres que se quede fijo al hacer scroll */
+  top: 40px;          /* ajusta la distancia desde arriba */
+  right: 80px;        /* ajusta la distancia desde la derecha */
+  z-index: 1000;      /* para que esté encima */
+}
+#btnVerPedido {
+  background-color: transparent;
+  color: black;
+  font-size: 16px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, background-color 0.3s;
+  /* Quitar margin-top porque la posición ya controla la ubicación */
+ 
+}
+#btnVerPedido:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .contenedor-estado-pedido {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+  }
+
+  #btnVerPedido {
+    writing-mode: horizontal-tb;
+    text-align: center;
+    padding: 6px 12px;
+    width: auto;
+    font-size: 14px;
+    background-color: transparent;
+    color: black;
+    border: 2px solid white; /* Borde negro de 2px */
+    border-radius: 8px; /* Bordes redondeados para mejor estilo */
+    cursor: pointer;
+    box-shadow: none;
+  }
+}
+
+
