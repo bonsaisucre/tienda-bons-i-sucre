@@ -200,29 +200,34 @@ async function guardarVenta() {
     return;
   }
 
+  // En este caso asumimos que siempre se vende 1 unidad
+  const cantidad = 1;
+  const precioUnitario = productoSeleccionado.precio;
+  const precioTotal = precioUnitario * cantidad;
+
   const { error } = await supabase
     .from('ventas')
     .insert([
       {
-          bonsai_id: productoSeleccionado.id,
-          codigo_bonsai: productoSeleccionado.codigo, // ✅ aquí se guarda el código
-          nombre_cliente: nombre,
-          direccion,
-          telefono,
-          fecha: obtenerFechaBoliviaISO()
-        }
-      ]);
+        bonsai_id: productoSeleccionado.id,
+        codigo_bonsai: productoSeleccionado.codigo,
+        nombre_cliente: nombre,
+        direccion,
+        telefono,
+        fecha: obtenerFechaBoliviaISO(),
+        precio_total_bonsai: precioTotal // ✅ aquí se guarda con el nombre correcto
+      }
+    ]);
 
   if (error) {
     alert("Error guardando la venta: " + error.message);
     return;
   }
 
-  // Aquí quité el alert que decías que no te gusta
-
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
 }
+
 
 // Descargar la imagen QR
 function descargarQR() {
