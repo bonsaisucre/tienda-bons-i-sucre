@@ -7,6 +7,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+
 let productos = [];
 let productoSeleccionado = null;
 
@@ -84,6 +85,11 @@ function mostrarModal(id) {
     document.getElementById("nombre").value = "";
     document.getElementById("direccion").value = "";
     document.getElementById("telefono").value = "";
+  }
+  if (id === 'modalVerPedido') {
+    // Limpiar input y resultado
+    document.getElementById('codigoPedido').value = '';
+    document.getElementById('seguimientoPedido').innerHTML = '';
   }
 
   const modal = document.getElementById(id);
@@ -185,6 +191,7 @@ function obtenerFechaBoliviaISO() {
 }
 
 // Guarda una venta en Supabase
+// Guarda una venta en Supabase
 async function guardarVenta() {
   if (!productoSeleccionado) {
     alert("Selecciona un producto primero.");
@@ -205,6 +212,19 @@ async function guardarVenta() {
   const precioUnitario = productoSeleccionado.precio;
   const precioTotal = precioUnitario * cantidad;
 
+  // ✅ Obtener el número consecutivo de venta
+  const { count: totalVentas, error: countError } = await supabase
+    .from('ventas')
+    .select('*', { count: 'exact', head: true });
+
+  if (countError) {
+    alert("Error al contar ventas: " + countError.message);
+    return;
+  }
+
+  const numeroVenta = (totalVentas || 0) + 1;
+
+  // Insertar la venta
   const { error } = await supabase
     .from('ventas')
     .insert([
@@ -215,7 +235,8 @@ async function guardarVenta() {
         direccion,
         telefono,
         fecha: obtenerFechaBoliviaISO(),
-        precio_total_bonsai: precioTotal // ✅ aquí se guarda con el nombre correcto
+        precio_total_bonsai: precioTotal,
+        numero_venta: numeroVenta // ✅ nuevo campo insertado
       }
     ]);
 
@@ -223,6 +244,12 @@ async function guardarVenta() {
     alert("Error guardando la venta: " + error.message);
     return;
   }
+
+  cerrarModal('modalCompra');
+  mostrarModal('modalMensaje');
+  mostrarContadorVentas?.(); // opcional: actualiza el contador en pantalla si lo tienes
+
+
 
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
@@ -256,7 +283,7 @@ function validarLogin() {
   const usuario = document.getElementById("loginUsuario").value.trim();
   const contra = document.getElementById("loginContra").value.trim();
 
-  if (usuario === "admin" && contra === "1234") {
+  if (usuario === "admin" && contra === "topo") {
     cerrarModal('modalLogin');
     mostrarModal('modalAdmin');
     document.getElementById("errorLogin").style.display = "none";
@@ -278,6 +305,79 @@ document.addEventListener("DOMContentLoaded", function () {
     toggle.src = isPassword ? "icons8-eye-48.png" : "icons8-invisible-48.png";
   });
 });
+// Consulta el estado del pedido por código del bonsái
+async function consultarEstadoPedido() {
+  const codigo = document.getElementById('codigoPedido').value.trim();
+
+  if (!codigo) {
+    alert('Por favor ingresa el código del bonsái.');
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from('ventas')
+    .select('estado')
+    .eq('codigo_bonsai', codigo)
+    .order('fecha', { ascending: false })
+    .limit(1);
+
+  const contenedor = document.getElementById('seguimientoPedido');
+
+  if (error || !data || data.length === 0) {
+    contenedor.innerHTML = `<p style="color: red;">No se encontró el pedido o hubo un error.</p>`;
+    return;
+  }
+
+  const estadoActual = data[0].estado.toLowerCase();
+
+  const estados = [
+    { nombre: 'preparando pedido', icono: '📦' },
+    { nombre: 'en tránsito a la terminal', icono: '🚚' },
+    { nombre: 'entregado', icono: '📬' }
+  ];
+
+  let html = '';
+  let mostrarTodos = estadoActual === 'entregado';
+  let estadoActualEncontrado = false;
+
+  for (const estado of estados) {
+    if (estado.nombre === estadoActual) {
+      const conCheck = estadoActual === 'entregado' ? ' ✅' : '';
+      html += `
+        <div class="estado-linea actual">
+          ${estado.icono} ${capitalizar(estado.nombre)}${conCheck}
+        </div>
+      `;
+      if (!mostrarTodos) break;
+      estadoActualEncontrado = true;
+    }
+else {
+      html += `
+        <div class="estado-linea completado">
+          ${estado.icono} ${capitalizar(estado.nombre)} ✅
+        </div>
+      `;
+    }
+  }
+
+  // Si estado final, mostrar mensaje
+  if (estadoActual === 'entregado') {
+    html += `
+      <div class="mensaje-final">
+        🌱 Tu arbolito podrá ser recogido mañana a partir de las 10:00 AM.
+      </div>
+    `;
+  }
+
+  contenedor.innerHTML = html;
+}
+
+function capitalizar(texto) {
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
+
+
 window.finalizarCompra = finalizarCompra;
 window.mostrarModal = mostrarModal;
 window.cerrarModal = cerrarModal;
@@ -285,3 +385,4 @@ window.verCatalogo = verCatalogo;
 window.agregarProducto = agregarProducto;
 window.validarLogin = validarLogin;
 window.descargarQR = descargarQR;
+window.consultarEstadoPedido = consultarEstadoPedido;
