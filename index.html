@@ -25,7 +25,14 @@
   </div>
 
   <!-- Botón Admin -->
-  <img src="1751075118469.png" id="btnAdmin" alt="Admin" onclick="mostrarModal('modalLogin')" />
+  <img src="1751075118469.png" id="btnAdmin" alt="Admin" onclick="mostrarModal('modalLogin')" style="cursor:pointer" />
+
+  <div class="contenedor-estado-pedido">
+    <button id="btnVerPedido" onclick="mostrarModal('modalVerPedido')">
+      rastrear pedido
+    </button>
+  </div>
+
 
   <!-- Título -->
   <h1 class="titulo">
@@ -41,7 +48,6 @@
     <div class="spinner"></div>
     <p>Cargando productos...</p>
   </div>
-
 
   <!-- Productos -->
   <div class="tienda" id="tienda"></div>
@@ -85,6 +91,19 @@
     </div>
   </div>
 
+  <!-- Modal Ver Estado Pedido -->
+  <div class="modal" id="modalVerPedido">
+    <div class="modal-content">
+      <span class="cerrar" onclick="cerrarModal('modalVerPedido')">&times;</span>
+      <h3>Consulta el estado de tu pedido</h3>
+      <input type="text" id="codigoPedido" placeholder="Ingresa el código de tu bonsái" />
+      <button onclick="consultarEstadoPedido()">Consultar Estado</button>
+      <div id="resultadoEstado" style="margin-top:20px; font-weight:bold;"></div>
+      <!-- Contenedor que faltaba -->
+        <div id="seguimientoPedido" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
   <!-- Modal QR -->
   <div class="modal" id="modalQR">
     <div class="modal-content">
@@ -117,7 +136,7 @@
       <button onclick="cerrarModal('modalMensaje'); mostrarModal('modalQR');">Siguiente</button>
     </div>
   </div>
-  <script type="module" src="script.js"></script>
 
+  <script type="module" src="script.js"></script>
 </body>
 </html>
