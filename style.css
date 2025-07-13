@@ -122,7 +122,13 @@ h1 {
   width: 95%;
   height: 86%;
   overflow: hidden; /* Importante para clip-path */
-  background-color: #d7c6c6;
+  background-color: #e8f5e9; /* Verde muy suave de fondo */
+
+  background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* textura tipo madera suave */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   justify-content: center;
   align-items: center;
   opacity: 0;
@@ -329,7 +335,7 @@ input:focus, textarea:focus {
 
      .modal {
      margin-top: 35px;
-         max-height: 695px;
+         max-height: 770px;
          background-color: #fff5f5; /* ✅ Usar el mismo fondo del modal original */
         }
 
@@ -362,20 +368,20 @@ input:focus, textarea:focus {
         transform: scaleX(1.5); 
         line-height: 0.9; 
     }
-    
+
     .producto h3{
         top:-10px;
         font-size: 15px;
-        
+
     }
 .codigo{
     margin-top: -21px;
-  
+
 }
   #imagenQR {
         width: 90%;        /* que use todo el ancho del modal */
         margin-left: 15px;      /* mantener proporción */
-      
+
     }
 }
 
@@ -686,54 +692,102 @@ input:focus, textarea:focus {
   z-index: 10;
   opacity: 0.9;
 }
-#seguimientoPedido {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-.estado-card {
+.progreso-envio {
   display: flex;
   align-items: center;
-  font-size: 18px;
-  margin: 10px 0;
-  gap: 10px;
-  padding: 10px 15px;
-  border-radius: 8px;
-  background-color: #f2f2f2;
+  justify-content: space-between; /* para que se separen bien */
+  gap: 25px; /* espacio general */
+  margin-top: 20px;
+  max-width: 1500px; /* limita ancho total para controlar espacios */
+  margin-left: auto;
+  margin-right: auto;
+}
+.progreso-envio.pasos-1 {
+  max-width: 150px; /* más estrecho para 1 paso */
+  justify-content: center; /* centrar ese paso */
+}
+.progreso-envio.pasos-2 {
+  max-width: 300px; /* más estrecho para 2 pasos */
+  gap: 20px; /* menos espacio */
+  justify-content: center; /* los centra con menos espacio */
+}
+
+.paso {
+  width: 610px;
+  min-height: 100px;
+  border: 2px solid #ccc;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  background-color: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.paso.completado {
+  border-color: #28a745;
+  background-color: #eafaf1;
+  color: #28a745;
   font-weight: bold;
 }
 
-.estado-card.completado {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.estado-card.actual {
-  background-color: #fff3cd;
+.paso.actual {
+  border-color: #ffc107;
+  background-color: #fff8e1;
   color: #856404;
+  font-weight: bold;
 }
 
-.icono-estado {
-  font-size: 24px;
-}
-.estado-linea {
-  font-size: 18px;
-  font-weight: bold;
-  padding: 10px 15px;
-  border-radius: 8px;
+.icono-paso {
+  font-size: 32px;
   margin-bottom: 8px;
-  display: inline-block;
 }
 
-.estado-linea.completado {
-  background-color: #d4edda;
-  color: #155724;
+.conector {
+  width: 30px;
+  height: 2px;
+  background-color: #28a745;
+  position: relative;
+  margin: 0 5px; /* margen horizontal pequeño */
 }
 
-.estado-linea.actual {
-  background-color: #fff3cd;
-  color: #856404;
+.check {
+  position: absolute;
+  top: -20px; /* ajusta para que esté arriba del conector */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.check-icon {
+  width: 40px;
+  height: 40px;
+}
+/* 🌐 RESPONSIVE: Para pantallas menores a 600px (celulares) */
+@media screen and (max-width: 600px) {
+  .progreso-envio {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    max-width: 100%;
+  }
+
+  .paso {
+    width: 90%; /* más adaptable al ancho del teléfono */
+  }
+
+  .conector {
+    width: 10px;
+    height: 2px;
+    margin: 10px 0;
+  }
+
+  .check {
+    top: -20px;
+  }
+
+  .check-icon {
+    width: 45px;
+    height: 45px;
+  }
 }
 .mensaje-final {
   margin-top: 20px;
@@ -746,6 +800,7 @@ input:focus, textarea:focus {
   text-align: center;
   border: 2px dashed #95d5b2;
 }
+
 .contenedor-estado-pedido {
   position: absolute; /* o fixed si quieres que se quede fijo al hacer scroll */
   top: 40px;          /* ajusta la distancia desde arriba */
@@ -763,7 +818,7 @@ input:focus, textarea:focus {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, background-color 0.3s;
   /* Quitar margin-top porque la posición ya controla la ubicación */
- 
+
 }
 #btnVerPedido:hover {
   background-color: #45a049;
