@@ -247,7 +247,7 @@ async function guardarVenta() {
 
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
-  mostrarContadorVentas?.(); // opcional: actualiza el contador en pantalla si lo tienes
+ 
 
 
 
@@ -308,6 +308,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Consulta el estado del pedido por código del bonsái
 async function consultarEstadoPedido() {
   const codigo = document.getElementById('codigoPedido').value.trim();
+  const contenedor = document.getElementById('seguimientoPedido');
 
   if (!codigo) {
     alert('Por favor ingresa el código del bonsái.');
@@ -321,8 +322,6 @@ async function consultarEstadoPedido() {
     .order('fecha', { ascending: false })
     .limit(1);
 
-  const contenedor = document.getElementById('seguimientoPedido');
-
   if (error || !data || data.length === 0) {
     contenedor.innerHTML = `<p style="color: red;">No se encontró el pedido o hubo un error.</p>`;
     return;
@@ -331,58 +330,59 @@ async function consultarEstadoPedido() {
   const estadoActual = data[0].estado.toLowerCase();
 
   const estados = [
-    { nombre: 'preparando pedido', icono: '📦' },
-    { nombre: 'en tránsito a la terminal', icono: '🚚' },
-    { nombre: 'entregado', icono: '📬' }
+    { nombre: 'preparando pedido', icono: '📦', texto: 'Preparado pedido' },
+    { nombre: 'en tránsito a la terminal', icono: '🚚', texto: 'En tránsito a la terminal' },
+    { nombre: 'entregado', icono: '📬', texto: 'Entregado a la empresa de envío' }
   ];
 
-  let html = '';
-  let mostrarTodos = estadoActual === 'entregado';
-  let estadoActualEncontrado = false;
+  const indiceActual = estados.findIndex(e => e.nombre === estadoActual);
+  let html = `<div class="progreso-envio pasos-${indiceActual + 1}">`;
 
-  for (const estado of estados) {
-    if (estado.nombre === estadoActual) {
-      const conCheck = estadoActual === 'entregado' ? ' ✅' : '';
+
+  for (let i = 0; i <= indiceActual; i++) {
+    const estado = estados[i];
+    const esFinal = estadoActual === 'entregado';
+
+    const clasePaso = i < indiceActual || esFinal ? 'completado' : 'actual';
+    const check = i < indiceActual || esFinal
+      ? '<img src="https://img.icons8.com/?size=100&id=63262&format=png&color=000000" alt="check" class="check-icon">'
+      : '';
+
+    html += `
+      <div class="paso ${clasePaso}">
+        <div class="icono-paso">${estado.icono}</div>
+        <p>${estado.texto}</p>
+      </div>
+    `;
+
+    // ✅ el conector debe estar FUERA del .paso
+    if (i < indiceActual) {
       html += `
-        <div class="estado-linea actual">
-          ${estado.icono} ${capitalizar(estado.nombre)}${conCheck}
-        </div>
-      `;
-      if (!mostrarTodos) break;
-      estadoActualEncontrado = true;
-    }
-else {
-      html += `
-        <div class="estado-linea completado">
-          ${estado.icono} ${capitalizar(estado.nombre)} ✅
+        <div class="conector">
+          <span class="check">${check}</span>
         </div>
       `;
     }
   }
 
-  // Si estado final, mostrar mensaje
+  // ✅ Cierra el div general solo una vez, fuera del bucle
+  html += '</div>';
+
   if (estadoActual === 'entregado') {
     html += `
       <div class="mensaje-final">
-        🌱 Tu arbolito podrá ser recogido mañana a partir de las 10:00 AM.
+         Tu arbolito podrás recogerlo mañana a partir de las 10:00 AM. en la terminal de la empresa de envío.
       </div>
     `;
   }
-
   contenedor.innerHTML = html;
-}
+  }
+  window.finalizarCompra = finalizarCompra;
+  window.mostrarModal = mostrarModal;
+  window.cerrarModal = cerrarModal;
+  window.verCatalogo = verCatalogo;
+  window.agregarProducto = agregarProducto;
+  window.validarLogin = validarLogin;
+  window.descargarQR = descargarQR;
+  window.consultarEstadoPedido = consultarEstadoPedido;
 
-function capitalizar(texto) {
-  return texto.charAt(0).toUpperCase() + texto.slice(1);
-}
-
-
-
-window.finalizarCompra = finalizarCompra;
-window.mostrarModal = mostrarModal;
-window.cerrarModal = cerrarModal;
-window.verCatalogo = verCatalogo;
-window.agregarProducto = agregarProducto;
-window.validarLogin = validarLogin;
-window.descargarQR = descargarQR;
-window.consultarEstadoPedido = consultarEstadoPedido;
