@@ -10,6 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 let productos = [];
 let productoSeleccionado = null;
+let carrito = [];
 
 // Carga los productos (bonsáis) disponibles desde Supabase
 async function cargarProductos() {
@@ -50,6 +51,41 @@ function renderizarTienda() {
 
   document.getElementById("cargando").style.display = "none";
 }
+function agregarProductoAlCarrito() {
+  if (!productoSeleccionado) return;
+
+  if (!carrito.find(p => p.id === productoSeleccionado.id)) {
+    carrito.push(productoSeleccionado);
+    alert(`${productoSeleccionado.nombre} agregado al carrito`);
+    document.getElementById("btnVerCarrito").classList.remove("oculto");
+  } else {
+    alert(`${productoSeleccionado.nombre} ya está en el carrito`);
+  }
+
+  cerrarModal('modalCatalogo');
+}
+function limpiarCarrito() {
+  carrito = [];
+  document.getElementById("btnVerCarrito").classList.add("oculto");
+}
+
+function mostrarCarrito() {
+  if (carrito.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+
+  const lista = carrito.map(p => `<li>${p.nombre} - ${p.precio} Bs</li>`).join('');
+  const total = carrito.reduce((sum, p) => sum + p.precio, 0);
+
+  document.getElementById("carritoLista").innerHTML = `
+    <ul>${lista}</ul>
+    <p><strong>Total:</strong> ${total} Bs</p>
+    <button onclick="mostrarModal('modalCompra')">Finalizar Compra</button>
+  `;
+
+  mostrarModal("modalCarrito"); // puedes tener un modal especial, o reusar uno
+}
 
 // Muestra el modal catálogo con los detalles del producto seleccionado
 function verCatalogo(index) {
@@ -75,7 +111,13 @@ async function finalizarCompra() {
   }
 }
 
-// Muestra un modal por id
+// Función auxiliar para saber si hay modales abiertos
+function hayModalesAbiertos() {
+  const modales = document.querySelectorAll('.modal');
+  return Array.from(modales).some(modal => modal.style.display === 'flex');
+}
+
+// Mostrar un modal y ocultar el botón "rastrear pedido"
 function mostrarModal(id) {
   if (id === 'modalQR') {
     document.getElementById('imagenQR').src = 'IMG-20250625-WA0012.jpg';
@@ -86,8 +128,8 @@ function mostrarModal(id) {
     document.getElementById("direccion").value = "";
     document.getElementById("telefono").value = "";
   }
+
   if (id === 'modalVerPedido') {
-    // Limpiar input y resultado
     document.getElementById('codigoPedido').value = '';
     document.getElementById('seguimientoPedido').innerHTML = '';
   }
@@ -98,23 +140,29 @@ function mostrarModal(id) {
     modal.classList.add("mostrar");
   }, 10);
 
+  // Oculta el botón rastrear pedido
+  const btn = document.getElementById('btnVerPedido');
+  if (btn) btn.classList.add('oculto');
+
   document.getElementById('btnAdmin').classList.add('ocultar');
 }
 
-// Cierra un modal por id
+// Cerrar un modal y mostrar botón "rastrear pedido" si no hay otros modales abiertos
 function cerrarModal(id) {
   const modal = document.getElementById(id);
-
-  // Quita 'mostrar' si estaba activo
   modal.classList.remove("mostrar");
-
-  // Agrega la animación de salida
   modal.classList.add("ocultando");
 
   setTimeout(() => {
     modal.style.display = "none";
     modal.classList.remove("ocultando");
-  }, 700); // Debe coincidir con la duración de puzzleOut
+
+    // Mostrar botón solo si no hay modales abiertos
+    if (!hayModalesAbiertos()) {
+      const btn = document.getElementById('btnVerPedido');
+      if (btn) btn.classList.remove('oculto');
+    }
+  }, 700);
 
   document.getElementById('btnAdmin').classList.remove('ocultar');
 }
@@ -191,28 +239,27 @@ function obtenerFechaBoliviaISO() {
 }
 
 // Guarda una venta en Supabase
-// Guarda una venta en Supabase
 async function guardarVenta() {
-  if (!productoSeleccionado) {
-    alert("Selecciona un producto primero.");
+  // Si el carrito está vacío pero hay productoSeleccionado, lo usamos
+  let itemsVenta = [...carrito];
+  if (itemsVenta.length === 0 && productoSeleccionado) {
+    itemsVenta = [productoSeleccionado];
+  }
+
+  if (itemsVenta.length === 0) {
+    alert("El carrito está vacío.");
     return;
   }
 
-  const nombre = document.getElementById("nombre").value;
-  const direccion = document.getElementById("direccion").value;
-  const telefono = document.getElementById("telefono").value;
+  const nombre = document.getElementById("nombre").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
 
   if (!nombre || !direccion || !telefono) {
     alert("Completa todos los campos.");
     return;
   }
 
-  // En este caso asumimos que siempre se vende 1 unidad
-  const cantidad = 1;
-  const precioUnitario = productoSeleccionado.precio;
-  const precioTotal = precioUnitario * cantidad;
-
-  // ✅ Obtener el número consecutivo de venta
   const { count: totalVentas, error: countError } = await supabase
     .from('ventas')
     .select('*', { count: 'exact', head: true });
@@ -224,19 +271,23 @@ async function guardarVenta() {
 
   const numeroVenta = (totalVentas || 0) + 1;
 
-  // Insertar la venta
+  const codigos = itemsVenta.map(p => p.codigo).join(', ');
+  const totalBonsais = itemsVenta.length;
+  const precioTotal = itemsVenta.reduce((sum, p) => sum + p.precio, 0);
+  const fecha = obtenerFechaBoliviaISO();
+
   const { error } = await supabase
     .from('ventas')
     .insert([
       {
-        bonsai_id: productoSeleccionado.id,
-        codigo_bonsai: productoSeleccionado.codigo,
         nombre_cliente: nombre,
         direccion,
         telefono,
-        fecha: obtenerFechaBoliviaISO(),
-        precio_total_bonsai: precioTotal,
-        numero_venta: numeroVenta // ✅ nuevo campo insertado
+        fecha,
+        numero_venta: numeroVenta,
+        codigo_de_busqueda: codigos,
+        total_bonsais: totalBonsais,
+        precio_total: precioTotal
       }
     ]);
 
@@ -247,7 +298,7 @@ async function guardarVenta() {
 
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
- 
+  limpiarCarrito();
 
 
 
@@ -274,7 +325,11 @@ function descargarQR() {
       cerrarModal('modalCompra');
       cerrarModal('modalCatalogo');
       cerrarModal('modalAdmin');
-    })
+      cerrarModal('modalCarrito');
+
+        // ✅ Volver a vista tienda y vaciar carrito
+        limpiarCarrito();
+      })
     .catch(() => alert('Error al descargar el QR'));
 }
 
@@ -307,20 +362,27 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 // Consulta el estado del pedido por código del bonsái
 async function consultarEstadoPedido() {
-  const codigo = document.getElementById('codigoPedido').value.trim();
+  const codigoInput = document.getElementById('codigoPedido').value.trim();
   const contenedor = document.getElementById('seguimientoPedido');
 
-  if (!codigo) {
+  if (!codigoInput) {
     alert('Por favor ingresa el código del bonsái.');
     return;
   }
 
-  const { data, error } = await supabase
-    .from('ventas')
-    .select('estado')
-    .eq('codigo_bonsai', codigo)
-    .order('fecha', { ascending: false })
-    .limit(1);
+  const codigosBusqueda = codigoInput.split(',').map(c => c.trim());
+
+  let query = supabase.from('ventas').select('estado').order('fecha', { ascending: false });
+
+  if (codigosBusqueda.length === 1) {
+    query = query.ilike('codigo_de_busqueda', `%${codigosBusqueda[0]}%`);
+  } else {
+    // Para varios códigos usamos or()
+    let filtroStr = codigosBusqueda.map(c => `codigo_de_busqueda.ilike.%${c}%`).join(',');
+    query = query.or(filtroStr);
+  }
+
+  const { data, error } = await query.limit(1);
 
   if (error || !data || data.length === 0) {
     contenedor.innerHTML = `<p style="color: red;">No se encontró el pedido o hubo un error.</p>`;
@@ -338,7 +400,6 @@ async function consultarEstadoPedido() {
   const indiceActual = estados.findIndex(e => e.nombre === estadoActual);
   let html = `<div class="progreso-envio pasos-${indiceActual + 1}">`;
 
-
   for (let i = 0; i <= indiceActual; i++) {
     const estado = estados[i];
     const esFinal = estadoActual === 'entregado';
@@ -355,7 +416,6 @@ async function consultarEstadoPedido() {
       </div>
     `;
 
-    // ✅ el conector debe estar FUERA del .paso
     if (i < indiceActual) {
       html += `
         <div class="conector">
@@ -365,7 +425,6 @@ async function consultarEstadoPedido() {
     }
   }
 
-  // ✅ Cierra el div general solo una vez, fuera del bucle
   html += '</div>';
 
   if (estadoActual === 'entregado') {
@@ -376,7 +435,8 @@ async function consultarEstadoPedido() {
     `;
   }
   contenedor.innerHTML = html;
-  }
+}
+
   window.finalizarCompra = finalizarCompra;
   window.mostrarModal = mostrarModal;
   window.cerrarModal = cerrarModal;
@@ -385,4 +445,6 @@ async function consultarEstadoPedido() {
   window.validarLogin = validarLogin;
   window.descargarQR = descargarQR;
   window.consultarEstadoPedido = consultarEstadoPedido;
-
+  window.agregarProductoAlCarrito = agregarProductoAlCarrito
+  window.mostrarCarrito = mostrarCarrito
+window.limpiarCarrito =limpiarCarrito
