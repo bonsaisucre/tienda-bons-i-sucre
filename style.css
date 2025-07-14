@@ -115,24 +115,19 @@ h1 {
   display: none;
   position: fixed;
   z-index: 1000;
-  margin-top: 12px;
-  border-radius: 25px;
-  left: 13px;
   top: 0;
-  width: 95%;
-  height: 86%;
-  overflow: hidden; /* Importante para clip-path */
-  background-color: #e8f5e9; /* Verde muy suave de fondo */
-
-  background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png'); /* textura tipo madera suave */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0; /* Quitar bordes redondeados si quieres que cubra todo */
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.6); /* Negro transparente */
   justify-content: center;
   align-items: center;
   opacity: 0;
 }
+
+
 
 .modal.mostrar {
   display: flex;
@@ -158,7 +153,7 @@ h1 {
 
 .modal-content,
 .modal-content-catalogo {
-    background: rgba(230, 229, 229, 0.85);
+   background-color: white;
     position: relative;
     width: 80%;
     max-width: 500px;
@@ -323,43 +318,80 @@ input:focus, textarea:focus {
     .tienda {
         grid-template-columns: repeat(2, 1fr);
     }
+  .modal {
+    margin-top: 0;       /* Quitar margen superior */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    max-height: none;    /* Para que no limite la altura */
+    background-color: rgba(0, 0, 0, 0.6); /* negro transparente */
+    border-radius: 0;    /* sin bordes redondeados */
+  }
 
-    .modal-content,
-    .modal-content-catalogo {
-        max-width: 100%;
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        padding: 10px;
-    }
-
-     .modal {
-     margin-top: 35px;
-         max-height: 770px;
-         background-color: #fff5f5; /* ✅ Usar el mismo fondo del modal original */
-        }
-
+  .modal-content,
+  .modal-content-catalogo {
+    max-width: 90%;     /* un poco de margen lateral */
+    max-height: 90%;    /* que no ocupe toda la pantalla si quieres */
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #fff; /* fondo blanco para el contenido */
+  }
     #btnAdmin {
         width: 95px;
         height: 95px;
         top: 16px;
         left: 36px;
     }
-   #modalCompra input#nombre,
-   #modalCompra input#direccion,
-   #modalCompra input#telefono {
-     margin-top: 120px; /* espacio extra arriba */
-     display: block;
-     width: 100%;
-     max-width: 300px;
-     padding: 10px;
-     border: 2px solid #a5d6a7;
-     border-radius: 8px;
-     background: #f0f8f5;
-     color: #2e7d32;
-     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-     transition: border-color 0.3s, box-shadow 0.3s;
-   }
+  @media (max-width: 600px) {
+    #modalCompra {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      margin-top: 0;
+      background-color: rgba(0, 0, 0, 0.6); /* Fondo negro semi-transparente */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #modalCompra .modal-content {
+      width: 95%;
+      max-height: 90vh;
+      height: auto;
+      margin-top: 150px;
+      overflow-y: auto;
+      background-color: white; /* fondo del contenido */
+      border-radius: 15px;
+      padding: 15px;
+    }
+  }
+
+
+  @media (max-width: 600px) {
+    #modalCompra input,
+    #modalCompra select {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      border: 2px solid #a5d6a7;
+      border-radius: 8px;
+      background: #f0f8f5;
+      color: #2e7d32;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: border-color 0.3s, box-shadow 0.3s;
+      margin-top: 10px; /* margen estándar para todos */
+    }
+
+    #modalCompra input#nombre {
+      margin-top: 120px; /* sólo al primer input */
+    }
+  }
 
     .titulo {
         top: 45px;             
@@ -428,8 +460,8 @@ input:focus, textarea:focus {
   top: 8px;
   left: 8px;
     margin-top: -12px;
-    margin-left: 120px;
-  background-color: rgb(245, 71, 71, 0.8); /* rojo con transparencia */
+    margin-left: 70px;
+  background-color: rgb(29, 93, 24, 0.8); /* rojo con transparencia */
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
@@ -909,4 +941,65 @@ input:focus, textarea:focus {
 
 .oculto {
   display: none !important;
+}
+/* Estilo general del modal de carrito */
+#modalCarrito .contenido-modal {
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+/* Lista del carrito */
+.lista-carrito ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.lista-carrito li {
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 16px;
+}
+
+/* Total del carrito */
+.lista-carrito p {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+/* Botón Finalizar Compra */
+.lista-carrito button {
+  background-color: #4CAF50; /* Verde atractivo */
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.lista-carrito button:hover {
+  background-color: #45a049;
+}
+
+/* Botón cerrar (la X) */
+#modalCarrito .cerrar {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 28px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+#modalCarrito .cerrar:hover {
+  color: #000;
 }
