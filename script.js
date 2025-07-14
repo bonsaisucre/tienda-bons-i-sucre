@@ -119,6 +119,16 @@ function hayModalesAbiertos() {
 
 // Mostrar un modal y ocultar el botón "rastrear pedido"
 function mostrarModal(id) {
+  // Cerrar todos los modales visibles excepto el que vamos a abrir
+  const modalesAbiertos = document.querySelectorAll('.modal');
+  modalesAbiertos.forEach(modal => {
+    if (modal.id !== id && modal.style.display === 'flex') {
+      modal.style.display = 'none';
+      modal.classList.remove('mostrar');
+      modal.classList.remove('ocultando');
+    }
+  });
+
   if (id === 'modalQR') {
     document.getElementById('imagenQR').src = 'IMG-20250625-WA0012.jpg';
   }
@@ -146,10 +156,10 @@ function mostrarModal(id) {
 
   document.getElementById('btnAdmin').classList.add('ocultar');
 }
-
-// Cerrar un modal y mostrar botón "rastrear pedido" si no hay otros modales abiertos
 function cerrarModal(id) {
   const modal = document.getElementById(id);
+  if (!modal) return; // por si no existe
+
   modal.classList.remove("mostrar");
   modal.classList.add("ocultando");
 
@@ -157,7 +167,7 @@ function cerrarModal(id) {
     modal.style.display = "none";
     modal.classList.remove("ocultando");
 
-    // Mostrar botón solo si no hay modales abiertos
+    // Mostrar botón rastrear pedido solo si no hay modales abiertos
     if (!hayModalesAbiertos()) {
       const btn = document.getElementById('btnVerPedido');
       if (btn) btn.classList.remove('oculto');
@@ -166,7 +176,6 @@ function cerrarModal(id) {
 
   document.getElementById('btnAdmin').classList.remove('ocultar');
 }
-
 
 // Agrega un nuevo bonsái subiendo imagen y guardando en Supabase
 async function agregarProducto() {
@@ -237,6 +246,16 @@ function obtenerFechaBoliviaISO() {
   const boliviaTime = new Date(ahora.getTime() - 4 * 60 * 60 * 1000);
   return boliviaTime.toISOString();
 }
+function generarCodigoRastreo() {
+  const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numeros = "0123456789";
+  const aleatorio = () => 
+    letras[Math.floor(Math.random() * letras.length)] + 
+    numeros[Math.floor(Math.random() * numeros.length)] + 
+    letras[Math.floor(Math.random() * letras.length)];
+
+  return "BONSAI-" + aleatorio() + "-" + Date.now().toString().slice(-4);
+}
 
 // Guarda una venta en Supabase
 async function guardarVenta() {
@@ -275,6 +294,9 @@ async function guardarVenta() {
   const totalBonsais = itemsVenta.length;
   const precioTotal = itemsVenta.reduce((sum, p) => sum + p.precio, 0);
   const fecha = obtenerFechaBoliviaISO();
+  // Ya tienes todos los datos necesarios aquí (nombre, direccion, telefono, codigos, etc.)
+
+  const codigoGenerado = generarCodigoRastreo();  // ✅ Generamos el código de rastreo
 
   const { error } = await supabase
     .from('ventas')
@@ -287,7 +309,8 @@ async function guardarVenta() {
         numero_venta: numeroVenta,
         codigo_de_busqueda: codigos,
         total_bonsais: totalBonsais,
-        precio_total: precioTotal
+        precio_total: precioTotal,
+        codigo_de_rastreo_cliente: codigoGenerado  // ✅ Guardamos el código en la nueva columna
       }
     ]);
 
@@ -295,6 +318,7 @@ async function guardarVenta() {
     alert("Error guardando la venta: " + error.message);
     return;
   }
+
 
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
@@ -366,26 +390,20 @@ async function consultarEstadoPedido() {
   const contenedor = document.getElementById('seguimientoPedido');
 
   if (!codigoInput) {
-    alert('Por favor ingresa el código del bonsái.');
+    alert('Por favor ingresa el código de rastreo.');
     return;
   }
 
-  const codigosBusqueda = codigoInput.split(',').map(c => c.trim());
-
-  let query = supabase.from('ventas').select('estado').order('fecha', { ascending: false });
-
-  if (codigosBusqueda.length === 1) {
-    query = query.ilike('codigo_de_busqueda', `%${codigosBusqueda[0]}%`);
-  } else {
-    // Para varios códigos usamos or()
-    let filtroStr = codigosBusqueda.map(c => `codigo_de_busqueda.ilike.%${c}%`).join(',');
-    query = query.or(filtroStr);
-  }
-
-  const { data, error } = await query.limit(1);
+  // Buscar la venta por el código_de_rastreo_cliente
+  const { data, error } = await supabase
+    .from('ventas')
+    .select('estado')
+    .eq('codigo_de_rastreo_cliente', codigoInput)
+    .order('fecha', { ascending: false })
+    .limit(1);
 
   if (error || !data || data.length === 0) {
-    contenedor.innerHTML = `<p style="color: red;">No se encontró el pedido o hubo un error.</p>`;
+    contenedor.innerHTML = `<p style="color: red;">todavia no estan preparando tu pedido.</p>`;
     return;
   }
 
@@ -434,8 +452,10 @@ async function consultarEstadoPedido() {
       </div>
     `;
   }
+
   contenedor.innerHTML = html;
 }
+
 
   window.finalizarCompra = finalizarCompra;
   window.mostrarModal = mostrarModal;
