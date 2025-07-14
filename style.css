@@ -346,31 +346,20 @@ input:focus, textarea:focus {
     }
   @media (max-width: 600px) {
     #modalCompra {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      margin-top: 0;
-      background-color: rgba(0, 0, 0, 0.6); /* Fondo negro semi-transparente */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
+      max-height: 70vh;  /* Máximo 70% de altura de pantalla */
+      margin-top: 35px;
+      overflow: hidden;
+      background-color: #fff5f5; /* o el que quieras */
     }
 
     #modalCompra .modal-content {
-      width: 95%;
-      max-height: 90vh;
-      height: auto;
-      margin-top: 150px;
-      overflow-y: auto;
-      background-color: white; /* fondo del contenido */
-      border-radius: 15px;
+      max-height: 65vh;   /* Máximo 65% para el contenido */
+      height: auto !important; /* Para que no ocupe toda la altura */
+      overflow-y: auto;  /* Scroll interno si el contenido sobrepasa */
+      border-radius: 10px;
       padding: 15px;
     }
   }
-
 
   @media (max-width: 600px) {
     #modalCompra input,
@@ -460,7 +449,7 @@ input:focus, textarea:focus {
   top: 8px;
   left: 8px;
     margin-top: -12px;
-    margin-left: 70px;
+    margin-left: 65px;
   background-color: rgb(29, 93, 24, 0.8); /* rojo con transparencia */
   color: white;
   padding: 4px 8px;
