@@ -329,14 +329,15 @@ input:focus, textarea:focus {
     border-radius: 0;    /* sin bordes redondeados */
   }
 
-  .modal-content,
+.modal-content,
   .modal-content-catalogo {
-    max-width: 90%;     /* un poco de margen lateral */
-    max-height: 90%;    /* que no ocupe toda la pantalla si quieres */
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;       /* 👈 esto permite ver el contenido oculto */
     border-radius: 15px;
     padding: 20px;
     margin-top: 30px;
-    background-color: #fff; /* fondo blanco para el contenido */
+    background-color: #fff;
   }
     #btnAdmin {
         width: 95px;
