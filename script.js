@@ -319,15 +319,27 @@ async function guardarVenta() {
     return;
   }
 
+  // Enviar datos a Pipedream webhook
+  await fetch("https://eojva0qdtf9wnnq.m.pipedream.net", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      nombre_cliente: nombre,
+      telefono: telefono,
+      direccion: direccion,
+      codigos: codigos,
+      total: precioTotal,
+      codigo_rastreo: codigoGenerado,
+      fecha: fecha
+    })
+  });
 
   cerrarModal('modalCompra');
   mostrarModal('modalMensaje');
   limpiarCarrito();
 
-
-
-  cerrarModal('modalCompra');
-  mostrarModal('modalMensaje');
 }
 
 
